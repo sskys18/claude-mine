@@ -10,7 +10,15 @@ quantus-app git:(main)
 
 ## Setup
 
-### 1. Clone & build
+### Option A: Let Claude do it
+
+Paste this into Claude Code:
+
+> Clone https://github.com/sskys18/claude-mine.git to ~/claude-mine, run bun install && bun run build (or npm if no bun). Ask me which plan I'm on (max200, max100, or pro) then create ~/.claude/claude-mine.local.json with that plan. Read my existing ~/.claude/settings.json and merge in the statusLine config pointing to ~/claude-mine/dist/index.js using whichever runtime is available (bun or node). After everything is set up, delete the cloned source and keep only dist/index.js.
+
+### Option B: Manual
+
+#### 1. Clone & build
 
 ```bash
 git clone https://github.com/sskys18/claude-mine.git ~/claude-mine
@@ -20,7 +28,7 @@ bun install && bun run build
 
 > No bun? Use `npm install && npx tsc && node dist/index.js` instead.
 
-### 2. Configure your plan
+#### 2. Configure your plan
 
 Create `~/.claude/claude-mine.local.json`:
 
@@ -36,7 +44,7 @@ Create `~/.claude/claude-mine.local.json`:
 | `max100` | 5h + 7d + Sonnet |
 | `pro` | 5h only |
 
-### 3. Enable the status line
+#### 3. Enable the status line
 
 Add to `~/.claude/settings.json`:
 
@@ -49,15 +57,13 @@ Add to `~/.claude/settings.json`:
 }
 ```
 
-Replace `~/claude-mine` with wherever you cloned it.
+#### 4. Verify
 
-### 4. Verify
-
-Open a new Claude Code session. You should see the HUD below the input field.
+Open a new Claude Code session. The HUD should appear below the input field.
 
 ## How it works
 
-The status line reads your Claude Code session data via stdin and fetches rate limits from the Anthropic API using your local credentials (macOS Keychain or `~/.claude/.credentials.json`).
+Reads Claude Code session data via stdin and fetches rate limits from the Anthropic API using your local credentials (macOS Keychain or `~/.claude/.credentials.json`).
 
 ## Colors
 
