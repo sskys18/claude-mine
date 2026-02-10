@@ -1,17 +1,6 @@
 # claude-mine
 
-Personal status line for Claude Code.
-
-## Features
-
-- **Model Display**: Current model name (Opus, Sonnet, Haiku)
-- **Token Usage**: Current/total tokens with color-coded percentage
-- **5h Rate Limit**: Merged into the main line — shows countdown only when clean (≤5%), or percentage + countdown when notable (>5%)
-- **7d Rate Limits**: 7-day all + Sonnet usage with day/hour countdown
-- **Project Info**: Directory name with git branch
-- **Neon Colors**: 256-color vibrant palette
-
-## Output
+Neon status line for Claude Code.
 
 ```
 Opus 4.6 │ 95K/200K 48% │ 6%(4h21m)
@@ -19,18 +8,35 @@ Opus 4.6 │ 95K/200K 48% │ 6%(4h21m)
 quantus-app git:(main)
 ```
 
-When 5h usage is clean (≤5%):
-```
-Opus 4.6 │ 95K/200K 48% │ ⏳ 4h36m
-```
+## Setup
 
-## Installation
+### 1. Clone & build
 
 ```bash
-git clone https://github.com/sskys18/claude-mine.git
-cd claude-mine
+git clone https://github.com/sskys18/claude-mine.git ~/claude-mine
+cd ~/claude-mine
 bun install && bun run build
 ```
+
+> No bun? Use `npm install && npx tsc && node dist/index.js` instead.
+
+### 2. Configure your plan
+
+Create `~/.claude/claude-mine.local.json`:
+
+```json
+{
+  "plan": "max200"
+}
+```
+
+| Plan | Rate limits shown |
+|------|-------------------|
+| `max200` | 5h + 7d + Sonnet |
+| `max100` | 5h + 7d + Sonnet |
+| `pro` | 5h only |
+
+### 3. Enable the status line
 
 Add to `~/.claude/settings.json`:
 
@@ -38,42 +44,33 @@ Add to `~/.claude/settings.json`:
 {
   "statusLine": {
     "type": "command",
-    "command": "bun /path/to/claude-mine/dist/index.js"
+    "command": "bun ~/claude-mine/dist/index.js"
   }
 }
 ```
 
-## Configuration
+Replace `~/claude-mine` with wherever you cloned it.
 
-Create `~/.claude/claude-mine.local.json`:
+### 4. Verify
 
-```json
-{
-  "plan": "max200",
-  "cache": {
-    "ttlSeconds": 60
-  }
-}
-```
+Open a new Claude Code session. You should see the HUD below the input field.
 
-| Plan | Description |
-|------|-------------|
-| `max200` | Max $200/month (20x) — 5h + 7d + Sonnet |
-| `max100` | Max $100/month (5x) — 5h + 7d + Sonnet |
-| `pro` | Pro — 5h only |
+## How it works
 
-## Color Legend
+The status line reads your Claude Code session data via stdin and fetches rate limits from the Anthropic API using your local credentials (macOS Keychain or `~/.claude/.credentials.json`).
 
-| Color | Usage | Meaning |
-|-------|-------|---------|
-| Neon green | 0–50% | Safe |
-| Electric gold | 51–80% | Warning |
-| Hot red | 81–100% | Critical |
+## Colors
+
+| Color | Usage |
+|-------|-------|
+| Neon green | 0–50% |
+| Electric gold | 51–80% |
+| Hot red | 81–100% |
 
 ## Requirements
 
-- **Claude Code** v1.0.80+
-- **Bun** or **Node.js** 18+
+- Claude Code v1.0.80+
+- Bun or Node.js 18+
 
 ## License
 
