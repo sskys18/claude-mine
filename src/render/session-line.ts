@@ -42,12 +42,6 @@ function buildFiveHourSection(ctx: RenderContext, t: Translations): string | nul
   const pct = Math.round(limits.five_hour.utilization);
   const countdown = limits.five_hour.resets_at ? formatCountdown(limits.five_hour.resets_at) : '';
 
-  if (pct <= 5) {
-    // Clean usage: show only hourglass + countdown
-    return countdown ? gray(`⏳ ${countdown}`) : null;
-  }
-
-  // Notable usage: show pct + countdown (no label)
   const color = getColorForPercent(pct);
   let text = colorize(`${pct}%`, color);
   if (countdown) {
