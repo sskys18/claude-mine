@@ -5,7 +5,7 @@ Neon status line for Claude Code.
 ```
 Opus 4.6 │ 95K/200K 48% │ 6%(4h21m)
 7d: 5%(5d 4h) │ S: 1%(~~)
-quantus-app git:(main)
+working-repo git:(main)
 ```
 
 ## Setup
