@@ -51,6 +51,15 @@ export function formatExpanded(
     parts.push("");
   }
 
-  parts.push("<i>Reply below to continue \u2193</i>");
   return parts.join("\n");
+}
+
+export function formatRC(session: Session, url: string): string {
+  const alarm = formatAlarm(session);
+  return [
+    alarm,
+    "",
+    `<b>RC active</b>`,
+    `<a href="${esc(url)}">${esc(url)}</a>`,
+  ].join("\n");
 }
