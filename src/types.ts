@@ -27,7 +27,7 @@ export interface Config {
 export const DEFAULT_CONFIG: Config = {
   plan: 'max200',
   cache: {
-    ttlSeconds: 60,
+    ttlSeconds: 300,
   },
 };
 
@@ -42,11 +42,15 @@ export interface UsageLimits {
   seven_day_sonnet?: RateLimitInfo;
 }
 
+export type RateLimitError = 'no_key' | 'rate_limited' | 'api_error' | null;
+
 export interface RenderContext {
   stdin: StdinInput;
   config: Config;
   gitBranch?: string;
   rateLimits: UsageLimits | null;
+  rateLimitsStale: boolean;
+  rateLimitError: RateLimitError;
 }
 
 export interface Translations {

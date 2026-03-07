@@ -1,6 +1,10 @@
 import { readFileSync } from "node:fs";
 import pino from "pino";
 
+declare const Bun: {
+  spawn(cmd: string[], options?: { stdout?: string; stderr?: string }): { exited: Promise<number>; exitCode: number; stderr: ReadableStream };
+};
+
 const log = pino({ name: "remote-control" });
 
 const RC_WAIT_MS = 6000;

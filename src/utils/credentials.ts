@@ -25,6 +25,35 @@ export async function getCredentials(): Promise<string | null> {
   }
 }
 
+const ACCESS_TOKEN_RE = /"accessToken"\s*:\s*"(sk-ant-[^"]+)"/;
+
+function extractAccessToken(raw: string): string | null {
+  const trimmed = raw.trim();
+
+  // Try direct JSON parse first
+  try {
+    const creds = JSON.parse(trimmed);
+    return creds?.claudeAiOauth?.accessToken ?? null;
+  } catch {
+    // Not plain JSON
+  }
+
+  // Keychain may store hex-encoded data (possibly truncated)
+  if (/^[0-9a-fA-F]+$/.test(trimmed)) {
+    try {
+      const str = Buffer.from(trimmed, 'hex').toString('utf-8');
+      const match = str.match(ACCESS_TOKEN_RE);
+      if (match) return match[1];
+    } catch {
+      // Hex decode failed
+    }
+  }
+
+  // Last resort: regex on raw string
+  const match = trimmed.match(ACCESS_TOKEN_RE);
+  return match ? match[1] : null;
+}
+
 async function getCredentialsFromKeychain(): Promise<string | null> {
   try {
     const result = await execFileAsync(
@@ -33,8 +62,11 @@ async function getCredentialsFromKeychain(): Promise<string | null> {
       { encoding: 'utf-8', timeout: EXEC_TIMEOUT_MS }
     );
 
-    const creds = JSON.parse(result.trim());
-    return creds?.claudeAiOauth?.accessToken ?? null;
+    const token = extractAccessToken(result);
+    if (token) return token;
+
+    debugError('keychain read', 'failed to extract access token');
+    return await getCredentialsFromFile();
   } catch (e) {
     debugError('keychain read', e);
     return await getCredentialsFromFile();

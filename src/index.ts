@@ -8,7 +8,7 @@ import { existsSync, statSync } from 'node:fs';
 import type { StdinInput, Config, RenderContext } from './types.js';
 import { DEFAULT_CONFIG } from './types.js';
 import { boldYellow } from './utils/colors.js';
-import { fetchUsageLimits } from './utils/api-client.js';
+import { fetchUsageLimits, type FetchResult } from './utils/api-client.js';
 import { getGitBranch } from './utils/git.js';
 import { translations } from './utils/i18n.js';
 import { render } from './render/index.js';
@@ -66,7 +66,7 @@ async function main(): Promise<void> {
 
   const validCwd = isValidDirectory(stdin.cwd ?? '') ? stdin.cwd : undefined;
 
-  const [gitBranch, rateLimits] = await Promise.all([
+  const [gitBranch, fetchResult] = await Promise.all([
     getGitBranch(validCwd),
     fetchUsageLimits(config.cache.ttlSeconds),
   ]);
@@ -75,7 +75,9 @@ async function main(): Promise<void> {
     stdin,
     config,
     gitBranch,
-    rateLimits,
+    rateLimits: fetchResult.limits,
+    rateLimitsStale: fetchResult.stale,
+    rateLimitError: fetchResult.error,
   };
 
   render(ctx, translations);

@@ -1,15 +1,15 @@
 import { Bot, InlineKeyboard } from "grammy";
 import pino from "pino";
-import { loadConfig } from "./config.ts";
+import { loadConfig } from "./config.js";
 import {
   storeSession,
   getSession,
   setActiveSession,
   type Session,
-} from "./session-store.ts";
-import { formatAlarm, formatExpanded, formatRC } from "./formatter.ts";
-import { parseTranscript } from "./transcript.ts";
-import { activateRC } from "./remote-control.ts";
+} from "./session-store.js";
+import { formatAlarm, formatExpanded, formatRC } from "./formatter.js";
+import { parseTranscript } from "./transcript.js";
+import { activateRC } from "./remote-control.js";
 
 const log = pino({ name: "bot" });
 

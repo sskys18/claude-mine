@@ -36,14 +36,19 @@ export function renderSessionLine(ctx: RenderContext, t: Translations): string {
 
 function buildFiveHourSection(ctx: RenderContext, t: Translations): string | null {
   const limits = ctx.rateLimits;
-  if (!limits) return colorize('? no key', COLORS.boldYellow);
+  if (!limits) {
+    if (ctx.rateLimitError === 'rate_limited') return gray('~ 429');
+    if (ctx.rateLimitError === 'api_error') return gray('~ err');
+    return colorize('? no key', COLORS.boldYellow);
+  }
   if (!limits.five_hour) return null;
 
   const pct = Math.round(limits.five_hour.utilization);
   const countdown = limits.five_hour.resets_at ? formatCountdown(limits.five_hour.resets_at) : '';
 
   const color = getColorForPercent(pct);
-  let text = colorize(`${pct}%`, color);
+  const stalePrefix = ctx.rateLimitsStale ? gray('~') : '';
+  let text = stalePrefix + colorize(`${pct}%`, color);
   if (countdown) {
     text += gray(`(${countdown})`);
   }
@@ -59,18 +64,20 @@ export function renderRateLimitsLine(ctx: RenderContext, t: Translations): strin
 
   const parts: string[] = [];
 
+  const stalePrefix = ctx.rateLimitsStale ? gray('~') : '';
+
   if (limits.seven_day) {
     const pct = Math.round(limits.seven_day.utilization);
     const color = getColorForPercent(pct);
     const cd = limits.seven_day.resets_at ? formatCountdown(limits.seven_day.resets_at) : '~~';
-    parts.push(`${boldBlue(t.labels['7d'])}: ${colorize(`${pct}%`, color)}${gray(`(${cd})`)}`);
+    parts.push(`${boldBlue(t.labels['7d'])}: ${stalePrefix}${colorize(`${pct}%`, color)}${gray(`(${cd})`)}`);
   }
 
   if (limits.seven_day_sonnet) {
     const pct = Math.round(limits.seven_day_sonnet.utilization);
     const color = getColorForPercent(pct);
     const cd = limits.seven_day_sonnet.resets_at ? formatCountdown(limits.seven_day_sonnet.resets_at) : '~~';
-    parts.push(`${boldBlue('S')}: ${colorize(`${pct}%`, color)}${gray(`(${cd})`)}`);
+    parts.push(`${boldBlue('S')}: ${stalePrefix}${colorize(`${pct}%`, color)}${gray(`(${cd})`)}`);
   }
 
   return parts.join(SEP);

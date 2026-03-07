@@ -1,8 +1,8 @@
 import pino from "pino";
-import { createBot } from "./bot.ts";
-import { startHookServer, type HookPayload } from "./hook-server.ts";
-import { type Session } from "./session-store.ts";
-import { loadConfig } from "./config.ts";
+import { createBot } from "./bot.js";
+import { startHookServer, type HookPayload } from "./hook-server.js";
+import { type Session } from "./session-store.js";
+import { loadConfig } from "./config.js";
 
 const log = pino({ name: "claude-telegram" });
 

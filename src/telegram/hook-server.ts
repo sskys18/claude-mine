@@ -1,5 +1,10 @@
 import pino from "pino";
 
+declare const Bun: {
+  serve(options: { port: number; hostname: string; fetch: (req: Request) => Response | Promise<Response> }): void;
+  spawn(cmd: string[], options?: { stdout?: string; stderr?: string }): { exited: Promise<number>; exitCode: number; stderr: ReadableStream };
+};
+
 const log = pino({ name: "hook-server" });
 
 export interface HookPayload {
@@ -15,7 +20,7 @@ export function startHookServer(port: number, onHook: OnHook): void {
   Bun.serve({
     port,
     hostname: "127.0.0.1",
-    fetch: async (req) => {
+    fetch: async (req: Request) => {
       const url = new URL(req.url);
 
       if (req.method === "POST" && url.pathname === "/hook") {
