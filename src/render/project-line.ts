@@ -1,6 +1,6 @@
 import path from 'node:path';
 import type { RenderContext } from '../types.js';
-import { boldYellow, boldCyan, magenta } from '../utils/colors.js';
+import { boldYellow, boldCyan, boldGreen, boldRed, magenta } from '../utils/colors.js';
 
 export function renderProjectLine(ctx: RenderContext): string {
   if (!ctx.stdin.cwd) return '';
@@ -10,6 +10,10 @@ export function renderProjectLine(ctx: RenderContext): string {
 
   if (ctx.gitBranch) {
     line += ` ${magenta('git:(')}${boldCyan(ctx.gitBranch)}${magenta(')')}`;
+  }
+
+  if (ctx.gitDiffStats) {
+    line += ` ${boldGreen(`+${ctx.gitDiffStats.insertions}`)}, ${boldRed(`-${ctx.gitDiffStats.deletions}`)}`;
   }
 
   return line;

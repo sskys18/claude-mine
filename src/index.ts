@@ -9,7 +9,7 @@ import type { StdinInput, Config, RenderContext } from './types.js';
 import { DEFAULT_CONFIG } from './types.js';
 import { boldYellow } from './utils/colors.js';
 import { fetchUsageLimits, type FetchResult } from './utils/api-client.js';
-import { getGitBranch } from './utils/git.js';
+import { getGitBranch, getGitDiffStats } from './utils/git.js';
 import { translations } from './utils/i18n.js';
 import { render } from './render/index.js';
 import { debugError } from './utils/errors.js';
@@ -66,8 +66,9 @@ async function main(): Promise<void> {
 
   const validCwd = isValidDirectory(stdin.cwd ?? '') ? stdin.cwd : undefined;
 
-  const [gitBranch, fetchResult] = await Promise.all([
+  const [gitBranch, gitDiffStats, fetchResult] = await Promise.all([
     getGitBranch(validCwd),
+    getGitDiffStats(validCwd),
     fetchUsageLimits(config.cache.ttlSeconds),
   ]);
 
@@ -75,6 +76,7 @@ async function main(): Promise<void> {
     stdin,
     config,
     gitBranch,
+    gitDiffStats,
     rateLimits: fetchResult.limits,
     rateLimitsStale: fetchResult.stale,
     rateLimitError: fetchResult.error,

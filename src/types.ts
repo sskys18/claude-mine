@@ -44,10 +44,16 @@ export interface UsageLimits {
 
 export type RateLimitError = 'no_key' | 'rate_limited' | 'api_error' | null;
 
+export interface GitDiffStats {
+  insertions: number;
+  deletions: number;
+}
+
 export interface RenderContext {
   stdin: StdinInput;
   config: Config;
   gitBranch?: string;
+  gitDiffStats?: GitDiffStats;
   rateLimits: UsageLimits | null;
   rateLimitsStale: boolean;
   rateLimitError: RateLimitError;
