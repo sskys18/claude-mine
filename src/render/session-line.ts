@@ -1,9 +1,9 @@
 import type { RenderContext, Translations } from '../types.js';
-import { COLORS, RESET, colorize, gray, boldWhite, boldBlue, getColorForPercent } from '../utils/colors.js';
-import { formatTokens, formatCountdown, shortenModelName } from '../utils/formatters.js';
+import { colorize, gray, boldWhite, getColorForPercent } from '../utils/colors.js';
+import { formatTokens, shortenModelName } from '../utils/formatters.js';
 import { AUTOCOMPACT_BUFFER } from '../constants.js';
 
-const SEP = ` ${COLORS.gray}│${RESET} `;
+const SEP = ` ${gray('│')} `;
 
 export function renderSessionLine(ctx: RenderContext, t: Translations): string {
   const parts: string[] = [];
@@ -24,61 +24,6 @@ export function renderSessionLine(ctx: RenderContext, t: Translations): string {
 
   const percentColor = getColorForPercent(percent);
   parts.push(`${gray(`${formatTokens(currentTokens)}/${formatTokens(totalTokens)}`)} ${colorize(`${percent}%`, percentColor)}`);
-
-  // Append 5h rate limit to the same line
-  const fiveHourSection = buildFiveHourSection(ctx, t);
-  if (fiveHourSection) {
-    parts.push(fiveHourSection);
-  }
-
-  return parts.join(SEP);
-}
-
-function buildFiveHourSection(ctx: RenderContext, t: Translations): string | null {
-  const limits = ctx.rateLimits;
-  if (!limits) {
-    if (ctx.rateLimitError === 'rate_limited') return gray('~ 429');
-    if (ctx.rateLimitError === 'api_error') return gray('~ err');
-    return colorize('? no key', COLORS.boldYellow);
-  }
-  if (!limits.five_hour) return null;
-
-  const pct = Math.round(limits.five_hour.utilization);
-  const countdown = limits.five_hour.resets_at ? formatCountdown(limits.five_hour.resets_at) : '';
-
-  const color = getColorForPercent(pct);
-  const stalePrefix = ctx.rateLimitsStale ? gray('~') : '';
-  let text = stalePrefix + colorize(`${pct}%`, color);
-  if (countdown) {
-    text += gray(`(${countdown})`);
-  }
-  return text;
-}
-
-export function renderRateLimitsLine(ctx: RenderContext, t: Translations): string {
-  const limits = ctx.rateLimits;
-  if (!limits) return '';
-
-  // Only show 7d + Sonnet on this line (5h is now on line 1)
-  if (!limits.seven_day && !limits.seven_day_sonnet) return '';
-
-  const parts: string[] = [];
-
-  const stalePrefix = ctx.rateLimitsStale ? gray('~') : '';
-
-  if (limits.seven_day) {
-    const pct = Math.round(limits.seven_day.utilization);
-    const color = getColorForPercent(pct);
-    const cd = limits.seven_day.resets_at ? formatCountdown(limits.seven_day.resets_at) : '~~';
-    parts.push(`${boldBlue(t.labels['7d'])}: ${stalePrefix}${colorize(`${pct}%`, color)}${gray(`(${cd})`)}`);
-  }
-
-  if (limits.seven_day_sonnet) {
-    const pct = Math.round(limits.seven_day_sonnet.utilization);
-    const color = getColorForPercent(pct);
-    const cd = limits.seven_day_sonnet.resets_at ? formatCountdown(limits.seven_day_sonnet.resets_at) : '~~';
-    parts.push(`${boldBlue('S')}: ${stalePrefix}${colorize(`${pct}%`, color)}${gray(`(${cd})`)}`);
-  }
 
   return parts.join(SEP);
 }

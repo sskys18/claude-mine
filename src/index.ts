@@ -1,21 +1,16 @@
 #!/usr/bin/env node
 
-import { readFile } from 'node:fs/promises';
-import { join, isAbsolute, resolve, sep } from 'node:path';
-import { homedir } from 'node:os';
+import { join } from 'node:path';
 import { existsSync, statSync } from 'node:fs';
+import { isAbsolute } from 'node:path';
 
-import type { StdinInput, Config, RenderContext } from './types.js';
-import { DEFAULT_CONFIG } from './types.js';
+import type { StdinInput, RenderContext } from './types.js';
 import { boldYellow } from './utils/colors.js';
-import { fetchUsageLimits, type FetchResult } from './utils/api-client.js';
 import { getGitBranch, getGitDiffStats } from './utils/git.js';
 import { translations } from './utils/i18n.js';
 import { render } from './render/index.js';
 import { debugError } from './utils/errors.js';
 import { STDIN_TIMEOUT_MS } from './constants.js';
-
-const CONFIG_PATH = join(homedir(), '.claude', 'claude-mine.local.json');
 
 function isValidDirectory(p: string): boolean {
   if (!p || !isAbsolute(p)) return false;
@@ -46,18 +41,8 @@ async function readStdin(): Promise<StdinInput | null> {
   }
 }
 
-async function loadConfig(): Promise<Config> {
-  try {
-    const content = await readFile(CONFIG_PATH, 'utf-8');
-    const userConfig = JSON.parse(content);
-    return { ...DEFAULT_CONFIG, ...userConfig };
-  } catch {
-    return DEFAULT_CONFIG;
-  }
-}
-
 async function main(): Promise<void> {
-  const [config, stdin] = await Promise.all([loadConfig(), readStdin()]);
+  const stdin = await readStdin();
 
   if (!stdin) {
     console.log(boldYellow('⚠️ stdin'));
@@ -66,20 +51,15 @@ async function main(): Promise<void> {
 
   const validCwd = isValidDirectory(stdin.cwd ?? '') ? stdin.cwd : undefined;
 
-  const [gitBranch, gitDiffStats, fetchResult] = await Promise.all([
+  const [gitBranch, gitDiffStats] = await Promise.all([
     getGitBranch(validCwd),
     getGitDiffStats(validCwd),
-    fetchUsageLimits(config.cache.ttlSeconds),
   ]);
 
   const ctx: RenderContext = {
     stdin,
-    config,
     gitBranch,
     gitDiffStats,
-    rateLimits: fetchResult.limits,
-    rateLimitsStale: fetchResult.stale,
-    rateLimitError: fetchResult.error,
   };
 
   render(ctx, translations);
