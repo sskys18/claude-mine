@@ -21,12 +21,5 @@ export function renderProjectLine(ctx: RenderContext): string {
     line += ` ${gray('·')} ${gray(`${repo.owner}/${repo.name}`)}`;
   }
 
-  // sspower flow stage for this cwd (flow.sh SSOT, 6 stages). Blank when idle.
-  if (ctx.flow?.stage) {
-    const f = ctx.flow;
-    const pos = f.index ? ` ${f.index}/${f.total}` : '';
-    line += ` ${gray('·')} ${magenta('◆ flow')} ${boldCyan(`${f.stage}${pos}`)}`;
-  }
-
   return line;
 }

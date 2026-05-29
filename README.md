@@ -1,10 +1,10 @@
 # claude-mine
 
-Neon multi-line status line for Claude Code — session, model health, account + Codex usage, and sspower flow stage.
+Neon multi-line status line for Claude Code — session, model health, and account + Codex usage.
 
 ```
 Opus 4.8 │ 101K/1.0M 10% │ fast │ 1h16m
-.claude git:(main) +37,-30 · sskys18/claude-config · ◆ flow exec 3/6
+.claude git:(main) +37,-30 · sskys18/claude-config
 ● claude │ 5h 29% (2h13m) │ 7d 6% (5d18h)
 ● codex  │ 5h 15% (46m) │ 7d 17% (3d)
 ```
@@ -18,7 +18,6 @@ Opus 4.8 │ 101K/1.0M 10% │ fast │ 1h16m
 
 **Line 2 — project**
 - basename(cwd), `git:(branch)`, `+ins,-del` working-tree diff, `owner/repo`
-- `◆ flow <stage> i/6` — active sspower flow stage for this cwd, read live from `~/.claude/sspower/flow-state.json` (stages: plan, plan-review, exec, test, review, merge). Blank when no flow is active.
 
 **Line 3 — Claude**
 - `●` service-health dot (Anthropic Statuspage indicator)
@@ -37,7 +36,6 @@ Health dot color: green = operational, gold = minor, red = major/critical, gray 
   - Claude: `https://anthropic.statuspage.io/api/v2/status.json`
   - Codex: `https://status.openai.com/api/v2/status.json` (Codex CLI runs on the OpenAI API)
   - Codex usage: newest `~/.codex/sessions/**/rollout-*.jsonl` → last `rate_limits` event
-- **sspower flow** is read live from `flow-state.json` every render (tiny local file; reflects stage changes immediately, no cache lag).
 
 ## Setup
 
@@ -75,7 +73,7 @@ Open or interact with a Claude Code session; the four lines appear below the inp
 
 - Claude Code v2.1.132+ (provides `context_window` + `rate_limits` on stdin)
 - Node.js 22+ (probe uses global `fetch`, `node:fs` recursive readdir) or Bun
-- Optional: `codex` CLI on PATH for the Codex usage line; sspower for the flow-stage segment
+- Optional: `codex` CLI on PATH for the Codex usage line
 
 ## Colors
 

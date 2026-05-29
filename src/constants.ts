@@ -31,12 +31,6 @@ export const HEALTH_TTL_MS = 120_000;
 /** Codex CLI session rollout root (default CODEX_HOME); holds rate_limits events. */
 export const CODEX_SESSIONS_DIR = join(homedir(), '.codex', 'sessions');
 
-/** sspower integration: live flow-state, owned by flow.sh (keyed by cwd). */
-export const SSPOWER_FLOW_STATE = join(homedir(), '.claude', 'sspower', 'flow-state.json');
-
-/** Canonical flow.sh stage order (merge -> done clears the flow). SSOT: flow.sh STAGES. */
-export const SSPOWER_FLOW_STAGES = ['plan', 'plan-review', 'exec', 'test', 'review', 'merge'] as const;
-
 /** Per-request timeout for the status probe. */
 export const HEALTH_FETCH_TIMEOUT_MS = 4000;
 

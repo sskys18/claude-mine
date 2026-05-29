@@ -12,7 +12,6 @@ import { render } from './render/index.js';
 import { debugError } from './utils/errors.js';
 import { STDIN_TIMEOUT_MS } from './constants.js';
 import { readHealth, maybeRefreshHealth } from './utils/model-health.js';
-import { readFlow } from './utils/sspower.js';
 
 function isValidDirectory(p: string): boolean {
   if (!p || !isAbsolute(p)) return false;
@@ -77,7 +76,6 @@ async function main(): Promise<void> {
     gitBranch,
     gitDiffStats,
     health,
-    flow: readFlow(validCwd),
     sessionStartMs,
   };
 

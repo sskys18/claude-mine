@@ -72,19 +72,11 @@ export interface ModelHealth {
   codexUsage?: CodexUsage;
 }
 
-export interface FlowState {
-  stage: string;
-  index: number;
-  total: number;
-  task?: string;
-}
-
 export interface RenderContext {
   stdin: StdinInput;
   gitBranch?: string;
   gitDiffStats?: GitDiffStats;
   health?: ModelHealth | null;
-  flow?: FlowState | null;
   /** Real session start (transcript birthtime, ms) for a live wall-clock timer. */
   sessionStartMs?: number;
 }
