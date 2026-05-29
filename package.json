@@ -5,7 +5,7 @@
   "description": "Personal status line for Claude Code",
   "main": "dist/index.js",
   "scripts": {
-    "build": "bun build src/index.ts --outfile=dist/index.js --target=node",
+    "build": "bun build src/index.ts --outfile=dist/index.js --target=node && bun build src/health-probe.ts --outfile=dist/health-probe.js --target=node",
     "bot": "bun run src/telegram/index.ts",
     "dev": "bun --watch run src/telegram/index.ts",
     "test": "echo '{\"model\":{\"display_name\":\"Opus\"},\"cwd\":\"/Users/test/project\",\"transcript_path\":\"\",\"context_window\":{\"context_window_size\":200000,\"current_usage\":{\"input_tokens\":50000,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}},\"cost\":{\"total_cost_usd\":0.5}}' | bun dist/index.js"
